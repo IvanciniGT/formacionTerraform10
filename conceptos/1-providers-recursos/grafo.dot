@@ -1,0 +1,7 @@
+digraph G {
+  rankdir = "RL";
+  node [shape = rect, fontname = "sans-serif"];
+  "docker_container.mi_contenedor" [label="docker_container.mi_contenedor"];
+  "docker_image.mi_imagen" [label="docker_image.mi_imagen"];
+  "docker_container.mi_contenedor" -> "docker_image.mi_imagen";
+}
