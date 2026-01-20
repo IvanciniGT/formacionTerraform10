@@ -54,6 +54,14 @@ variable "nombre_del_contenedor" {
     # Significa que la variable, ademas de datos de su tipo, admite el valor null.
     # Pero ese valor hay que establecerlo explícitamente.
     # Terraform NO ARRANCA si una variable NO TIENE VALOR.
+    validation {
+        error_message = "El nombre del contenedor solo puede contener letras, números, guiones y guiones bajos"
+        condition     =  length(regexall("^[A-Za-z0-9_-]+$", var.nombre_del_contenedor)) == 1
+        # En este caso, estamos usando en la expresion un operador comparativo: ==
+        # Eso da como resultado true o false
+        # Si devuelve true la variable es válida.. La validación se considera satisfecha
+        # Si devuelve false la variable no es válida.. La validación falla
+    }
 }
 # Al ejecutar el script:
 # terraform plan | apply
@@ -95,6 +103,33 @@ variable "cpus" {
     description = "Quota (en base 1) de CPU para el contenedor Docker"
     type        = number
     nullable    = true
+
+    validation {
+        #condition     = var.cpus > 0
+        # Me temo que no es suficiente
+        # Si la variable vale -1, cuando devuelve esa expresión: false. Es adecuado? SI
+        # Si la variable vale 4, cuando devuelve esa expresión: true.   Es adecuado? SI
+        # Pero... qué pasa si la variable vale null?
+        # Y null > 0 que devuelve? ERROR!!!! El operador > no se se puede aplicar sobre null
+        #condition     = var.cpus == null ? true : (var.cpus > 0 && var.cpus <= 6)
+        condition     = var.cpus == null ? true : var.cpus > 0
+        # Hay que tener cuidad con el && y el || en estas expresiones
+        # En muchos lenguajes de programación el && es el operador AND en cortocircuito
+        # Eso significa que si la primera condición no se cumple, la segunda NO SE PROCESA
+        # Si el operador no es en cortocircuito, ambas condiciones se procesan SIEMPRE
+        # condition    = var.cpus == null || var.cpus > 0
+        # Eso si var.cpus es null, la primera condición da true, pero como en terraform
+        # el operador || no es en cortocircuito, se evalúa la segunda condición
+        # Y devolvería ERROR !!!!!
+        # Si la variable es null, cuanto devuelve esa expresión? true... Me vale.. admito el valor nulo
+        # Si no es nulo? Es cuando comprueba si es mayor que 0 o no. Está bien!
+        error_message = "El número de CPUs debe ser superior a 0"
+    }
+    validation {
+        condition     = var.cpus == null ? true : var.cpus <= 6
+        error_message = "El número de CPUs debe ser inferior o igual a 6"
+    }
+    # Las validaciones se aplican en orden... y todas deben dar true para que la variable sea válida
 }
 # Si en docker no limito la CPU, el contenedor puede usar toda la CPU del host
 # Imaginemos que si queremos permitir este comportamiento
@@ -120,10 +155,57 @@ variable "repo_imagen_contenedor" {
     description = "Repositorio de la imagen del contenedor Docker"
     type        = string
     nullable    = false
+    # Aquí pondríamos una validación con REGEX similar a la del nombre del contenedor
 }
 
 variable "tag_imagen_contenedor" {
     description = "Tag de la imagen del contenedor Docker"
     type        = string
     nullable    = false
+    # Aquí pondríamos una validación con REGEX similar a la del nombre del contenedor
+}
+
+variable "variables_de_entorno" {
+    description = "Variables de entorno para el contenedor Docker"
+    #type        = set(string)
+    nullable    = true
+    # Esto es un desmadre == GUARRADA !
+    # No estamos dejando claro cómo hay que rellenar esta variable.
+    # En este caso el proveedor solo admite que los string tengan clave, valor separados por =
+    # Pero eso no lo estamos explicitando por ningún sitio.
+    # 2 opciones para resolver este entuerto:
+    # Opción 1: Validar los strings con REGEX para que cumplan el formato clave=valor
+    #           Y si alguien escribe algo de forma diferente, EXPLOTAR y sacar mensaje
+    #           Esto es una opción VALIDA, pero CUTRE! Es reactivo
+    #           Primero date la ostia... y luego ya te lo cuento!
+    # Opción 2: Cambiar el tipo de dato a algo que no genere ambigüedad
+    # Opción 2.1: Usar un map(string). un map es un conjunto de pares clave:valor
+    # Es lo que en otros lenguajes de programación llamamos un diccionario o un hashmap, un array asociativo, etc
+    type        = map(string) # este string se refiere al VALOR!
+                              # Los map en terraform, su clave siempre es un string
+    #Al definir la variable de esta forma, el valor debe sumistrarse:
+    # variables_de_entorno = {
+    #     VAR1 = "valor1"
+    #     VAR2 = "valor2"
+    # }
+    # Opción 2.2: Usar un object.
+    # Esto es lo más completo en tipos de datos que ofrece terraform
+    # type = set(object({
+    #     nombre: string,
+    #     valor: string
+    # }))
+    # Si lo definimos así, el valor debe suministrarse:
+    # variables_de_entorno = [
+    #     {
+    #       nombre = "VAR1",
+    #       valor  = "valor1"
+    #      },
+    #     {
+    #       nombre = "VAR2",
+    #       valor  = "valor2"
+    #     }
+    # ]
+    # En un proyecto real, yo dejaría set(object) para evitar ambigüedades
+    # En el curso, vamos a usar map(string)
+    # Para tener variedad de ejemplos, ya que la siguiente variable (ports) si la dejamos como set(object)
 }

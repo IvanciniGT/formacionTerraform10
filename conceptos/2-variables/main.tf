@@ -15,12 +15,13 @@ resource "docker_container" "mi_contenedor" {
                  # Pero realmente podemos poner EXPRESIONES complejas (MUY COMPLEJAS)
                  # En este caso estamos metiendo un IF:
                  # CONDICION ? VALOR_SI_SE_CUMNPLE_LA_CONDICION : VALOR_SI_NO_SE_CUMPLE_LA_CONDICION
-    cpu_shares = var.cpus * 1024
+    cpu_shares = var.cpus == null ? null : var.cpus * 1024
     # En este caso, convertimos nosotros el valor de cpus (en base 1) a cpu_shares (en base 1024)
     # En los valores de las propiedades podemos usar operadores:
     # +, -, *, /, % (resto de la division entera), etc
     start      = var.arranque_automatico
-    env        = ["VAR1=valor1" , "VAR2=valor2"]
+    #env        = ["VAR1=valor1" , "VAR2=valor2"]
+    env        = var.variables_de_entorno
     ports {
         internal = 80
         external = 8080
