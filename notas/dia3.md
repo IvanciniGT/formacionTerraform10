@@ -132,3 +132,22 @@ Diferencias entre mapa y object:
 Los datos quee necesito, REPITO: LOS DATOS vienen impuestos por la funcionalidad que quiero conseguir.
 La forma en que los REPRESENTO es cosa mía... Opto por la que sea más cómoda para quién rellena esos datos (EMPATIA POR FAVOR !!!!).
 Mi trabajo: PARTIRME EL CULO PARA MONTAR LUEGO LAS EXPRESIONES PERTINENTES QUE CONVIERTAN ESOS DATOS EN LO QUE NECESITA LA PROPIEDAD DEL RECURSO.
+
+
+---
+
+255.255.255.255
+0
+
+^(ALGO[.]){3}ALGO$
+
+ALGO?
+
+0 7 9        (([0-9])|
+10-99        ([1-9][0-9])|
+100-199      (1[0-9]{2})|
+200-249      (2[0-4][0-9])|
+250-255      (25[0-5]))
+
+
+^(((([0-9])|([1-9][0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))[.]){3})(((([0-9])|([1-9][0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))))$
