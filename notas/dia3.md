@@ -151,3 +151,82 @@ ALGO?
 
 
 ^(((([0-9])|([1-9][0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))[.]){3})(((([0-9])|([1-9][0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))))$
+
+---
+
+# CONTROL DE FLUJO:
+
+Hasta ahora ya hemos aprendido como escribir algunos CONDICIONALES y BUCLES en terraform.
+
+## CONDICIONALES:
+
+- La expresión ternaria:      CONDICION ? VALOR_SI_CIERTO : VALOR_SI_FALSO
+    que podemos usarla para:
+    - Rellenar propiedades de recursos
+    - En las validaciones de las variables
+
+## BUCLES:
+
+- La expresión:          [ for elemento in coleccion : dato_a_devlver if condicion ]
+    que podemos usarla para:
+    - Rellenar propiedades de recursos
+    - En las validaciones de las variables
+
+- La expresión:          { for elemento in coleccion : clave => valor_a_devlver if condicion }
+    que podemos usarla para:
+    - Rellenar propiedades de recursos
+    - En las validaciones de las variables
+
+- Bloques dinamicos. Dentro de un recurso, cuando queremos crear Blocks repetidos dentro de un resource en función de una colección.
+    dynamic "nombre_bloque" {
+        for_each = listra o un set
+        iterator = nombre
+        content {
+            propiedad1 = nombre.value.atributo1
+            propiedad2 = nombre.value.atributo2
+        }
+    }
+
+- Si queremos crear recursos repetidos (en bucle), hay 2 opciones:
+    - count..... Es muy sencillo... solo tengo que pasarle un numero
+                 Al usar count, terraform me regala la variable count.index  
+    - for_each.. Es un poquito más complejo... pero me da más flexibilidad.
+                 Hay casos donde me compensa usar for_each en lugar de count.
+                 Al for_each le puedo pasar un mapa o un set/lista de STRINGS (no de otro tipo).
+                 Habitualmente lo usamos para mapas...
+                 Al usar for_each, terraform me regala la variable each.key y each.value
+                 Si le he pasado un mapa, each.key es la clave del mapa y each.value es el valor del mapa.
+                 Si le he pasado un set/lista de strings, each.key es el string y each.value es el mismo string.
+
+Esto.... y puede ser que en ocasiones me interese crear objetos conficionalmente? Y ME TEMO QUE SI!
+
+Tengo un despliegue con unos tomcats sirviendo una app web.
+En producción, cuantos servidores quiero? Siempre más de uno para tener alta disponibilidad.
+Y en desarrollo? Solo quiero uno.
+Pero eso tiene otra implicación...
+En producción, que necesito delante de los servidores? Un balanceador de carga.
+En desarrollo? No necesito balanceador de carga.
+
+Osea, que dependiendo del número de servidores que quiera desplegar, necesitaré o no un balanceador de carga delante. RECURSO CONDICIONAL!
+ESTO SE RESUELVE CON EL COUNT!... mezclado con una expresión condicional (TERNARIA).
+
+
+Me piden 5 máquinas virtuales... Cuantos balanceadores quiero? 1 
+                                                nginx
+                                                ha-proxy
+
+
+Estamos montando un script que nos permita hacer el despliegue de una infra.
+Para esta infra necesito una serie de servidores (contenedores)
+Y quizás un balanceador de carga... 
+El balanceador lo pongo solo si hay más de un servidor.
+Si solo hay un servidor, no pongo balanceador.
+
+Definimos una variable llamada: num_contenedores (num_servidores), esta variable contendrá un número.
+Cuál será el número que contendrá? Yo que se... depende del entorno donde se despliegue.
+E incluso dependerá del momento del tiempo...
+Quizás el día 1 en producción arrancan con 2 servidores
+Y cuando pase 1 año, necesitan 17.
+
+Quiero montar un programa que me haga el despliegue de esa infra.
+Y el programa debe de funcionar tanto si piden 1, como si piden 5 como si piden 17 servidores.

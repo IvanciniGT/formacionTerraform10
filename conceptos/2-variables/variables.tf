@@ -212,7 +212,15 @@ variable "variables_de_entorno" {
 
 variable "puertos" {
     description = "Puertos a mapear en el contenedor Docker"
-    type        = list(object({
+    type        = set(object({ # Me funcionaría tanto set como lista.
+    # set es más simple
+    # Set me permite hacer bucles for_each sin problemas.. Las listas también
+    # Pero... si quiero acceder a un dato concreto: var.puertos[1] (el primer elemento)
+    # eso solo lo podría hacer si fuese una lista
+    # En nuestro caso no necesitamos acceder a un elemento concreto
+    # Solo iteramos sobre TO DOS los elementos
+    # Nos basta con un set.
+    # Dicho esto. CONSEJO: Usad siempre listas y me olvido.
         puerto_interno = number
         puerto_externo = number
         ip             = optional(string, "0.0.0.0")

@@ -24,15 +24,16 @@ resource "docker_container" "mi_contenedor" {
 
     env        = [ for clave, valor in var.variables_de_entorno : "${clave}=${valor}" ]
 
-    ports {
-        internal = 80
-        external = 8080
-        ip       = "0.0.0.0"
-    }
-
-    ports {
-        internal = 443
-        external = 8443
+    # Cuando se ejecute este programa, necesitaré tantos bloques "ports" como elementos tenga la variable puertos (que es una lista)
+    dynamic "ports" {
+        for_each = var.puertos # puedo poner una lista o un set
+        iterator = puerto
+        content {             # El value hay que ponerlo... lo obliga terraform. no es una palabra nuestra
+            internal = puerto.value.puerto_interno
+            external = puerto.value.puerto_externo
+            ip       = puerto.value.ip
+            protocol = lower(puerto.value.protocolo)
+        }
     }
 }
 
