@@ -90,7 +90,7 @@ resource "docker_container" "mis_contenedores_personalizados2" {
 resource "docker_container" "balanceador_de_carga" {
     # Lo creo en base al: num_contenedores
     count = (
-              var.num_contenedores > 1  ? # CONDICION
+              local.necesito_balanceador_de_carga  ? # CONDICION
                   1 :                     # Valor si se cumple la condición
                   0                       # Valor si NO se cumple la condición
             )
@@ -171,3 +171,12 @@ variable "contenedores_mapa" {
 
 # Consejo... Object!!!!
 # Imaginar que pongo map. Y el día de ma´ñana quiero poner además del puerto, el protocolo (http/https)
+
+locals {
+  # El bloque locals me permite definir variables internas al script
+
+  necesito_balanceador_de_carga = var.num_contenedores > 1
+  # Una vez definida la variable, puedo usarla fácilmente en cualquier parte del script:
+  # Me puedo referenciar a ella como: local.necesito_balanceador_de_carga
+
+}

@@ -1,12 +1,12 @@
+
 terraform {
   required_providers {
     docker = {
       source = "kreuzwerker/docker"
-      version = "3.6.2"
+      version = "2.25.0"
     }
   }
 }
 
 provider "docker" {
-  # Configuration options
 }

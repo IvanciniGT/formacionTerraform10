@@ -179,7 +179,7 @@ Hasta ahora ya hemos aprendido como escribir algunos CONDICIONALES y BUCLES en t
 
 - Bloques dinamicos. Dentro de un recurso, cuando queremos crear Blocks repetidos dentro de un resource en función de una colección.
     dynamic "nombre_bloque" {
-        for_each = listra o un set
+        for_each = lista o un set de lo que sea
         iterator = nombre
         content {
             propiedad1 = nombre.value.atributo1
