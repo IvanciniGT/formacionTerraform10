@@ -58,7 +58,9 @@ output "ip_contenedor_nginx" {
 
 # Las quiero en texto, una detras de otra con un ; entre ellas.
 output "todas_las_ips" {
-
+    value = join( ";", 
+        [ for interfaz_de_red in docker_container.mi_contenedor.network_data: interfaz_de_red.ip_address ] 
+    )
 }
 
 # Se parece un poquito en la definicióna las variables.

@@ -164,6 +164,7 @@ Hasta ahora ya hemos aprendido como escribir algunos CONDICIONALES y BUCLES en t
     que podemos usarla para:
     - Rellenar propiedades de recursos
     - En las validaciones de las variables
+    - En los outputs
 
 ## BUCLES:
 
@@ -171,11 +172,13 @@ Hasta ahora ya hemos aprendido como escribir algunos CONDICIONALES y BUCLES en t
     que podemos usarla para:
     - Rellenar propiedades de recursos
     - En las validaciones de las variables
+    - En los outputs
 
 - La expresión:          { for elemento in coleccion : clave => valor_a_devlver if condicion }
     que podemos usarla para:
     - Rellenar propiedades de recursos
     - En las validaciones de las variables
+    - En los outputs
 
 - Bloques dinamicos. Dentro de un recurso, cuando queremos crear Blocks repetidos dentro de un resource en función de una colección.
     dynamic "nombre_bloque" {
@@ -230,3 +233,93 @@ Y cuando pase 1 año, necesitan 17.
 
 Quiero montar un programa que me haga el despliegue de esa infra.
 Y el programa debe de funcionar tanto si piden 1, como si piden 5 como si piden 17 servidores.
+
+---
+
+# Estados en terraform
+
+Terraform como hemos dicho ya varias veces, trabaja con un lenguaje declarativo.
+Y además nos ofrece IDEMPOTENCIA.
+
+IDEMPOTENCIA? Que puedo ejecutar el script montón de veces teniendo el sistema en ESTADOS distintos y siempre voy a tener el mismo ESTADO FINAL.
+
+ESTADO: Es un conjunto de recursos.
+
+Y desde el punto de vista de terraform hay 3 estados en todo momento.
+
+    - El estado que solicita el usuario (ESTADO DESEADO)
+      Es decir, el conjunto de recursos que el usuario ha declarado en sus scripts de terraform. 
+    - El estado real del sistema (ESTADO REAL/ACTUAL)
+      Es decir, el conjunto de recursos que realmente existen en el proveedor (CLOUD).
+    - El estado conocido por terraform (ESTADO CONOCIDO)
+      Lo que terraform cree/sabe que hay en el proveedor (CLOUD).
+
+Y esas tres cosas son cosas diferentes.
+
+    El día 0, empieza mi proyecto... y aun no hay infra.
+     ESTADO REAL:       No hay recursos.. no hay nada.. no hay infra.
+     ESTADO CONOCIDO:   No hay recursos.. no hay nada.. no hay infra.
+     ESTADO DESEADO:    En el script hemos uesto que hay que crear 5 servidores.
+
+    Y todo el juego de terraform es conseguir que esos 3 estados coincidan. Sean iguales entre si.
+
+        Script         --->   Terraform        --  provider ---> Proveedor (CLOUD)
+        ESTADO DESEADO        ESTADO CONOCIDO                    ESTADO REAL 
+        (5 servidores)        (0 servidores)                    (0 servidores)
+
+        Y entonces ejecuto:
+            terraform apply
+
+        Script         --->   Terraform        --  provider ---> Proveedor (CLOUD)
+        ESTADO DESEADO        ESTADO CONOCIDO                    ESTADO REAL 
+        (5 servidores)        (5 servidores)                    (5 servidores)
+
+    ESTADO DESEADO --> apply ---> ESTADO REAL ---> refresh ---> ESTADO CONOCIDO
+
+    Realmente, cuando ejecuto un terraform apply, en automático, terraform hace un refresh del estado real del sistema,
+    Y no solo una, sino 2 veces, una antes de comenzar (para establecer el plan de ejecución) y otra al final (para conocer lo que REALMENTE ha sido creado).
+
+    Ahora.. el usuario pide tener 6 servidores
+
+        Script         --->   Terraform        --  provider ---> Proveedor (CLOUD)
+        ESTADO DESEADO        ESTADO CONOCIDO                    ESTADO REAL 
+        (6 servidores)        (6 servidores)                    (6 servidores)
+
+Y ahora... el cabroncete de nuestro usuario, sin decirle nada a terraform se va al cloud y borra uno de los servidores.
+
+        Script         --->   Terraform        --  provider ---> Proveedor (CLOUD)
+        ESTADO DESEADO        ESTADO CONOCIDO                    ESTADO REAL 
+        (6 servidores)        (6 servidores)                    (5 servidores)
+
+
+Y aquí hay un tema.
+Y es complejo.
+
+Cuando creo una infra con terraform, más me vale seguir tocandola con terraform.
+Esto de ir al cloud y tocar cosas a mano mal asunto... NOS DA MUCHOS PROBLEMAS.
+
+O uso terraform, o no uso terraform.
+Híbrido = PROBLEMAS = RUINA !
+
+Oye.. que un dia se ha hecho algo... y no se debía...  habrá formas de resolverlo: DOLOROSAS.. de muchas horas de trabajo... pero se puede resolver.
+    Tenemos el terraform refresh
+    Tenemos el terraform import
+    Tenemos el terraform state rm
+    Hay ciertos comandos que me ayudan en estas situaciones.
+    Pero no son cosas para hacer a la ligera.
+    Son cosas para momentos puntuales.
+
+    La forma limpia de trabajar es:
+    Si decido usar terraform, TODO se hace con terraform.
+    O el día de mañana dejo de usar terraform y ya lo hago todo a mano o con otro sistema.
+    Pero la vuelta atrás a Terraform es MUY COMPLICADA.
+    Se podría hacer... pero es TARABAJON!
+
+En terraform es estado conocido es un fichero llamado: terraform.tfstate
+Los cambios que se van haciendo en la infra se van reflejando en ese fichero.
+Ojo... en ese fichero solo tenemos la última versión de la infra.
+No las versiones anteriores (aunque terraform tiene un sistema de backups automáticos de ese fichero).... pero un backup sobreescribe al anterior.... Al final tengo la última versión y la anterior. NO MAS.
+
+Y más me vale no perder ese fichero.
+
+Es más... si 2 compañeros intentar ejecutar el script desde distintas máquinas... sin tener ese fichero sincronizado... PROBLEMON!
