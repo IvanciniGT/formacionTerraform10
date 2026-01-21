@@ -21,7 +21,9 @@ resource "docker_container" "mi_contenedor" {
     # +, -, *, /, % (resto de la division entera), etc
     start      = var.arranque_automatico
     #env        = ["VAR1=valor1" , "VAR2=valor2"]
-    env        = var.variables_de_entorno
+
+    env        = [ for clave, valor in var.variables_de_entorno : "${clave}=${valor}" ]
+
     ports {
         internal = 80
         external = 8080

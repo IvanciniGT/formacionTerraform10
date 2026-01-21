@@ -209,3 +209,58 @@ variable "variables_de_entorno" {
     # En el curso, vamos a usar map(string)
     # Para tener variedad de ejemplos, ya que la siguiente variable (ports) si la dejamos como set(object)
 }
+
+variable "puertos" {
+    description = "Puertos a mapear en el contenedor Docker"
+    type        = list(object({
+        puerto_interno = number
+        puerto_externo = number
+        ip             = optional(string, "0.0.0.0")
+        protocolo      = optional(string, "tcp")
+    }))
+    nullable    = false
+
+    # Validaciones
+    # Puerto_interno.. debe estar entre 1 y 65535
+    validation {
+        condition     = (
+                            length(var.puertos) == 0 || 
+                            alltrue([ for puerto in var.puertos : puerto.puerto_interno > 0 ])
+                        )
+        error_message = "El puerto interno debe ser mayor que 0"
+    }
+    # Puerto_interno.. debe ser menor o igual que 65535
+    validation {
+        condition     = (
+                            length(var.puertos) == 0 || 
+                            alltrue([ for puerto in var.puertos : puerto.puerto_interno <= 65535 ])
+                        )
+        error_message = "El puerto interno debe ser menor o igual que 65535"
+    }
+    # Puerto externo.. debe estar entre 1 y 65535
+    validation {
+        condition     = (
+                            length(var.puertos) == 0 || 
+                            alltrue([ for puerto in var.puertos : puerto.puerto_externo > 0 ])
+                        )
+        error_message = "El puerto externo debe ser mayor que 0"
+    }
+    # Puerto externo.. debe ser menor o igual que 65535
+    validation {
+        condition     = (
+                            length(var.puertos) == 0 || 
+                            alltrue([ for puerto in var.puertos : puerto.puerto_externo <= 65535 ])
+                        )
+        error_message = "El puerto externo debe ser menor o igual que 65535"    
+    }
+    # Protocolo... solo admitimos tcp y udp
+    validation {
+        condition     = (
+                            length(var.puertos) == 0 || 
+                            alltrue([ for puerto in var.puertos : 
+                                contains(["tcp", "udp"], lower(puerto.protocolo))
+                            ])
+                        )
+        error_message = "El protocolo debe ser tcp o udp"   
+    }
+}

@@ -80,11 +80,31 @@ condicion ? valor_si_verdadero : valor_si_falso
 
 Los bucles en expresiones :
 
+##### Bucles que generan lista:
+
 [for elemento in var.lista : elemento * 2 if elemento > 10]
 
 [for mi_variable_de_iteracion in lista : valor_a_devolver if condicion_para_procesar_ese_elemento]
 
-Los bucles siempre me devuelven una lista.
+Estos bucles siempre me devuelven una lista.
+
+##### Bucles que generan Mapa:
+
+{for elemento in var.lista : elemento => elemento * 2 if elemento > 10}
+                                      = >
+{for clave,valor in var.mapa : valor => clave if elemento > 10}
+
+Estos bucles generan un mapa.
+
+##### Nota adicional sobre los bucles.
+
+Dentro del for, podemos recorrer:
+- Listas:
+  for elemento in var.mi_lista
+- Sets:
+  for elemento in var.mi_set
+- Mapas:
+  for clave, valor in var.mi_mapa
 
 #### Operadores booleans
 

@@ -1,8 +1,9 @@
 #variables_de_entorno = ["VAR1=valor1" , "VAR2=valor2"]
 
 variables_de_entorno = {
-    VAR1 = "valor1"
-    VAR2 = "valor2"
+    VAR1 = "valorA"
+    VAR2 = "valorB"
+    VAR3 = "valorC"
 }
 
 #variables_de_entorno = [
