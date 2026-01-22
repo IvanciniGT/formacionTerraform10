@@ -7,10 +7,40 @@ module "mis_claves_ssh" {
                             # - URLs a repositorios git
                             # - Nombres de módulos publicados en el registro de terraform
 }
+# Un data es una busqueda que hago dentro de un proveedor
+# Me permite buscar recursos ya existentes en la plataforma del proveedor
+# y traer sus datos para usarlos en mi configuración.
+data "aws_ami" "ubuntu" {
+  most_recent = true
 
-# generamos la máquina virtual 
-resource "maquina_virtual" "mi_maquina"{
-   # Configuración del recurso
-   # Por algún sitio aquí tendremos que poner la clave ssh publica que hemos generado
-   # module.mis_claves_ssh.clave_publica.openssh
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_instance" "mi_servidor" {
+  ami           = data.aws_ami.ubuntu.id # Amazon Machine Image (AMI)
+                                         # Un identificador de una imagen de SO 
+                                         # dada de alta en Amazon
+  instance_type = "t3.micro" # Esto condiciona:
+                                    # - La CPU (vCPU)
+                                    # - La memoria RAM
+                                    # - El rendimiento de red
+                                    # - La arquitectura (x86 o ARM)
+                                    # Amazon tiene distintos tipos de instancias
+                                    # Si sé de amazon sabré qué características tiene cada tipo
+                                    # O me tocará ir a la docu de AWS a mirar las características de cada tipo
+                                    # Terraform no me va a contar nada de eso.
+
+  tags = {
+    Name = "HelloWorld"
+  }
 }
