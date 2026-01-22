@@ -37,3 +37,13 @@ Queremos hacer unn programa que:
   - private_key.pem
   - public_key.openssh
   - private_key.openssh
+
+---
+
+Estamos montando un programa!
+
+- Cuando empiezo a crear un programa, lo mejor es pensar lo primero en el comportamiento que quiero que tenga.
+- Y aunque lo parezca .. no lo tenemos todo lo definido que deberíamos.
+- 2 cosas importantes para comenzar:
+  - Definir qué le voy a pasar al programa en tiempo de ejecución <- Variables
+  - Definir qué es lo que va a devolver el programa  <- Outputs
