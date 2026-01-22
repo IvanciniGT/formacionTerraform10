@@ -313,7 +313,7 @@ Oye.. que un dia se ha hecho algo... y no se debía...  habrá formas de resolve
     Si decido usar terraform, TODO se hace con terraform.
     O el día de mañana dejo de usar terraform y ya lo hago todo a mano o con otro sistema.
     Pero la vuelta atrás a Terraform es MUY COMPLICADA.
-    Se podría hacer... pero es TARABAJON!
+    Se podría hacer... pero es TRABAJON!
 
 En terraform es estado conocido es un fichero llamado: terraform.tfstate
 Los cambios que se van haciendo en la infra se van reflejando en ese fichero.
