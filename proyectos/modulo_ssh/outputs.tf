@@ -6,6 +6,6 @@
 # Esto ahora es un módulo.
 # Se usará en un script.
 # Dentro de ese script, puede interesar acceder a alguno de los datos de las claves generadas.
-# SI... a cuales? Publicas o Privadas? A las públicas
+# SI... a cuales? Públicas o Privadas? A las públicas
 
 # Las exponemos con un output
