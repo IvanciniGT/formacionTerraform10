@@ -4,5 +4,5 @@ forzar_regeneracion_de_claves = false
 
 algoritmo_claves = {
     nombre          = "RSA"
-    configuracion   = "P224"
+    configuracion   = 2048
 }

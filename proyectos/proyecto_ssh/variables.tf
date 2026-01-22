@@ -65,4 +65,31 @@ variable "algoritmo_claves" {
                          )
     }
 
+    # Número, entero y en un rango concreto .. Si queremos complicarlo más.. que sea múltiplo de numero % 8 == 0
+    # Funciones útiles: can()  tonumber()
+
+
+    validation { # Esta regla aplica solo si el algoritmo es RSA
+        error_message = "El algoritmo RSA admite configuraciones numéricas entre 1024 y 16384, que sean múltiplos de 8"
+        condition     =  (                                   # ! =
+                            upper(var.algoritmo_claves.nombre) != "RSA"   || # Si el algoritmo no es RSA, 
+                                                                             # la condición debe ser true (pasa la validación),
+                                                                             # ya que no le aplica esta validación
+                            var.algoritmo_claves.configuracion == null ? true : # Si el algoritmo es RSA
+                                                                                # y la configuración no está definida (null) se
+                                                                                # tomará luego el valor por defecto. Lo damos por bueno
+                            (
+                                !can( tonumber( var.algoritmo_claves.configuracion ) ) ? false :  # Que sea numérico
+                                # can devuelve true si la operacion que hay dentro se ejecuta sin errores.
+                                (
+                                    # Que sea mayor o igual a 1024
+                                    tonumber(var.algoritmo_claves.configuracion) >= 1024 &&
+                                    # Que sea menor o igual a 16384
+                                    tonumber(var.algoritmo_claves.configuracion) <= 16384 &&
+                                    # Que sea múltiplo de 8
+                                    tonumber(var.algoritmo_claves.configuracion) % 8 == 0
+                                )
+                            )
+                         )
+    }
 }
