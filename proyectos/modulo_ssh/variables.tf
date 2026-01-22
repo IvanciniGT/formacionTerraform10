@@ -7,13 +7,12 @@ variable "directorio_claves" {
   validation {
     condition     = length( 
                         regexall("^([.]{0,2})([\\/\\][.]?[a-zA-Z0-9_-]+)+([\\/\\]?)$", var.directorio_claves) 
+                        # TODO Mejorar la expresión regular para caso windows (letras de unidad C:\ etc)
                     ) == 1
     error_message = "El directorio de claves no es válido"
   }
 
-  # /.directorio1/directorio2/directorio3/
-  # ./directorio_local
-  # ../directorio_superior
+  default    = "./claves"
 
 }
 
@@ -22,6 +21,7 @@ variable "forzar_regeneracion_de_claves" {
   description = "Indica si se deben regenerar las claves SSH aunque ya existan"
   type        = bool
   nullable    = false
+  default     = false
 }
 
 # Algoritmo
@@ -34,6 +34,10 @@ variable "algoritmo_claves" {
                         #                 Opción 2: No poner valor por defecto, y en automático se pone null
                     })
     nullable    = false
+    default     = {
+                    nombre        = "RSA"
+                    configuracion = 2048
+                  }
 
     validation  {
         error_message = "El algoritmo de clave no es válido. Valores permitidos: RSA, ECDSA, ED25519"
