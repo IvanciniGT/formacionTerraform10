@@ -1,20 +1,22 @@
 terraform {
   required_providers {
-    tls = {
-      source = "hashicorp/tls"
-      version = "4.1.0"
-    }
     aws = {
-      #...
+      source = "hashicorp/aws"
+      version = "6.28.0"
     }
   }
 }
+
+provider "aws" {
+  region = "eu-west-1"
+}
+
 
 provider "tls" {           # La configuración de los proveedores se pone en los scripts 
                             # No la ponemos en los módulos
   # Configuration options
 }
 
-provider "aws" {
+provider "null" {
   # Configuration options
 }

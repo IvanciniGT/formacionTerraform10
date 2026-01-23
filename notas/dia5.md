@@ -60,3 +60,14 @@ resource "null_resource" "exportador_de_ips" {
     }
     
 }
+
+
+# Terraform y cloud providers
+
+Depende un poco el cloud.. en general todos los gordos van igual
+
+    admite configuración de usuario/contraseña
+                  v
+    TERRAFORM > PROVIDER > CLI DEL CLOUD > CLOUD
+     ^                          ^
+    SCRIPT                  usuario/contraseña

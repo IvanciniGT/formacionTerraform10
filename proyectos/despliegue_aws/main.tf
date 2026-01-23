@@ -39,8 +39,23 @@ resource "aws_instance" "mi_servidor" {
                                     # Si sé de amazon sabré qué características tiene cada tipo
                                     # O me tocará ir a la docu de AWS a mirar las características de cada tipo
                                     # Terraform no me va a contar nada de eso.
-
+  key_name = aws_key_pair.mi_clave.key_name
   tags = {
-    Name = "HelloWorld"
+    Name = "${var.nombre}-server"
   }
+}
+
+resource "aws_key_pair" "mi_clave" {
+  key_name   = "${var.nombre}-key"
+  public_key = file( "./claves/public_key.openssh" )
+  
+  depends_on = [
+    module.mis_claves_ssh
+  ]
+}
+
+variable "nombre" {
+  type = string
+  description = "Nombre del despliegue"
+  nullable = false
 }
