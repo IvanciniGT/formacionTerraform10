@@ -19,7 +19,7 @@ resource "docker_container" "mi_contenedor" {
         # Acaba la ejecución de terraform con error.
         # Es más... la ejecución se detiene en este punto.
         # Este comportamiento, es el por defecto de los provisioners... puedo cambiarlo:
-        on_failure = "continue"  # Si pongo esto, aunque falle el provisioner, la ejecución de terraform continúa.
+        on_failure = continue  # Si pongo esto, aunque falle el provisioner, la ejecución de terraform continúa.
     } # Este es un caso de uso de provisioner LOCAL: Hacer pruebas desde la máquina donde se ejecuta terraform
       # hacia el recurso que acabamos de crear (el contenedor docker en este caso)... aunque habrá otras opciones para esto más usadas: Checks, post-conditions, etc
 
@@ -44,7 +44,7 @@ resource "docker_container" "mi_contenedor" {
                          echo "La IP del contenedor es: $IP"
                     EOT
           
-        on_failure  = "continue"
+        on_failure  = continue
         # Es posible también crear variables de entorno para ese intérprete
         environment = {
             IP = "${docker_container.mi_contenedor.network_data[0].ip_address}"

@@ -6,7 +6,7 @@ variable "directorio_claves" {
 
   validation {
     condition     = length( 
-                        regexall("^([.]{0,2})([\\/\\][.]?[a-zA-Z0-9_-]+)+([\\/\\]?)$", var.directorio_claves) 
+                        regexall("^([.]{0,2})([\\/\\\\][.]?[a-zA-Z0-9_-]+)+([\\/\\\\]?)$", var.directorio_claves) 
                         # TODO Mejorar la expresión regular para caso windows (letras de unidad C:\ etc)
                     ) == 1
     error_message = "El directorio de claves no es válido"

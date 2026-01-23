@@ -1,5 +1,5 @@
 
-resource  "tls_private_key" "mi_clave_ssh" {
+ephemeral  "tls_private_key" "mi_clave_ssh" {
     count = local.es_necesario_generar_claves ? 1 : 0
 
     algorithm = local.nombre_algoritmo
@@ -17,16 +17,22 @@ resource  "tls_private_key" "mi_clave_ssh" {
                     upper(var.algoritmo_claves.configuracion)        # ponemos la configuración en mayúsculas. 
                     : null                                           # Si no han puesto ECDSA o la configuración es nula, No se aplica, ponemos null
                 )
-    
+}
+
+resource "null_resource" "exportador_de_claves" {
+    count = local.es_necesario_generar_claves ? 1 : 0
+    triggers ={
+        "Menchu a exportar!" = timestamp()
+    }
     provisioner "local-exec" {
         command = <<EOT
             mkdir -p ${local.directorio_claves}
 
-            echo -n "${self.private_key_pem}"      > ${local.ruta_fichero_privado_pem}
-            echo -n "${self.private_key_openssh}"  > ${local.ruta_fichero_privado_openssh}
+            echo -n "${ephemeral.tls_private_key.mi_clave_ssh[0].private_key_pem}"      > ${local.ruta_fichero_privado_pem}
+            echo -n "${ephemeral.tls_private_key.mi_clave_ssh[0].private_key_openssh}"  > ${local.ruta_fichero_privado_openssh}
 
-            echo -n "${self.public_key_pem}"       > ${local.ruta_fichero_publico_pem}
-            echo -n "${self.public_key_openssh}"   > ${local.ruta_fichero_publico_openssh}
+            echo -n "${ephemeral.tls_private_key.mi_clave_ssh[0].public_key_pem}"       > ${local.ruta_fichero_publico_pem}
+            echo -n "${ephemeral.tls_private_key.mi_clave_ssh[0].public_key_openssh}"   > ${local.ruta_fichero_publico_openssh}
         EOT
     }
 }
