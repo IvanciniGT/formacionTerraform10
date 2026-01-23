@@ -39,10 +39,10 @@ resource "docker_container" "mi_contenedor" {
         # Terraform ofrece una sintaxis muy especial para poder poner textos multilínea
         # Eso aplica a todos los valores de tipo texto (string)
         ## < < - EOT
-        command     = <<- EOT      
+        command = <<-EOT
                          echo "El contenedor se ha creado correctamente"
                          echo "La IP del contenedor es: $IP"
-                         EOT
+                    EOT
           
         on_failure  = "continue"
         # Es posible también crear variables de entorno para ese intérprete
