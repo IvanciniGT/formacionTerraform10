@@ -47,7 +47,7 @@ resource "aws_instance" "mi_servidor" {
 
 resource "aws_key_pair" "mi_clave" {
   key_name   = "${var.nombre}-key"
-  public_key = file( "./claves/public_key.openssh" )
+  public_key = try(file( "./claves/public_key.openssh" ), "RUINA")
   
   depends_on = [
     module.mis_claves_ssh
